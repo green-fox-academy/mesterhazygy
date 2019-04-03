@@ -1,0 +1,3 @@
+C:/Users/megha/greenfox/mesterhazygy/week-01/day-03/DefineBasicInfo/cmake-build-debug/CMakeFiles/DefineBasicInfo.dir
+C:/Users/megha/greenfox/mesterhazygy/week-01/day-03/DefineBasicInfo/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/megha/greenfox/mesterhazygy/week-01/day-03/DefineBasicInfo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
