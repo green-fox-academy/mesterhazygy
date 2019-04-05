@@ -12,7 +12,7 @@ int main() {
     aj[1] = aj[3];
     aj[4] = k;
     aj[3] = l;
-    std::cout << aj << std::endl;
+    std::cout << aj[0] << aj[1] << aj[2] << aj[3] << aj[4] << std::endl;
 
     return 0;
 }
