@@ -33,6 +33,14 @@ int main() {
     int d = 8;
     int time = 120;
     std::string out3 = "";
+    if (((d % 4) == 0) && (time < 200)) {
+        out3 = "check";
+    } else if (time > 200) {
+        out3 = "time out";
+    } else {
+        out3 = "run forest run";
+    }
+    std::cout << out3 << std::endl;
 
 
 
