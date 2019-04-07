@@ -12,7 +12,8 @@ int main() {
         sumOfNumbers += userNumbers;
         std::cout << std::endl;
     }
-    std::cout << sumOfNumbers << std::endl;
+    std::cout << "The sum of numbers is: " << sumOfNumbers << std::endl;
+    std::cout << "The average of numbers is: " << (double)sumOfNumbers / (double)userNum << std::endl;
 
     return 0;
 }
