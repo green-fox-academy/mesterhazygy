@@ -6,25 +6,24 @@ int main() {
     int usernum;
     std::cin >> usernum;
 
-    for (int i = 0; i < usernum; i++)
-    {
-        for (int j = 0; j < usernum; j++)
-        { if ( i == 0) {                        //elso sor
-            std::cout << "%";
-        } else if ((i > 0) && (i < usernum))    //koztes sorok
-        {
-            if (j == 0)                         //elso poziciok
-            {
+    for (int i = 0; i < usernum; i++) {
+        for (int j = 0; j < usernum; j++) {
+            if (i == 0) {                        //elso sor
                 std::cout << "%";
-            } else if (j < usernum){            //koztes poziciok
-                std::cout << "0" <<;
-            } else {
-                std::cout << "%";               //utolso oszlop
+            } else if ((i > 0) && (i < (usernum - 1)))    //koztes sorok
+            {
+                if ((j == 0) || (j == (usernum - 1))) {
+                    std::cout << "%";
+                } else {
+                    std::cout << "0";
+                }
+
+            } else if (i == (usernum - 1)) {
+                std::cout << "%";
             }
 
         }
-
-        } std::cout << std::endl;
+        std::cout << std::endl;
     }
 
     return 0;
