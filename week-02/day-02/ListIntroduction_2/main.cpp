@@ -32,6 +32,8 @@ int main() {
     for (unsigned int k = 0; k < listB.size(); k++) {
         if ((listB.at(k).compare("Durian")) == 0) {
             std::cout << "The index of Durian on the second list is " << k << std::endl;
+        } else if (k == listB.size() - 1) {
+            std::cout << "Durian is not on the list" << std::endl;
         }
     }
     listB.insert(listB.end(), {"Passion fruit", "Pummelo"});
