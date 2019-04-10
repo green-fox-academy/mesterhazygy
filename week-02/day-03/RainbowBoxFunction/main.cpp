@@ -7,7 +7,7 @@ const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 //Draws geometry on the canvas
-void draw();
+void draw(int);
 
 
 //Starts up SDL and creates window
@@ -25,22 +25,20 @@ SDL_Renderer* gRenderer = nullptr;
 void draw()
 {
     SDL_SetRenderDrawColor(gRenderer, 255 /*R*/, 255 /*G*/, 0 /*B*/, 0xFF /*A*/);
-    int x = rand() % 255 + 1;
-    int y = rand() % 255 + 1;
-    int z = rand() % 255 + 1;
-    int v = rand() % 400 + 1;
-    int u = rand() % 400 + 1;
 
     /*SDL_Rect negyzet = {x, y, 40, 40};
     SDL_RenderFillRect(gRenderer, &negyzet);
     SDL_RenderDrawRect(gRenderer, &negyzet);
     */
-    SDL_Rect negyzet = {v, v, u, u};
-    for (int i = 0; i < 5; i++) {
-        SDL_SetRenderDrawColor(gRenderer, x /*R*/, y /*G*/, z /*B*/, 0xFF /*A*/);
-        SDL_RenderDrawRect(gRenderer, &negyzet);
-        SDL_RenderFillRect(gRenderer, &negyzet);
-    }
+    int x = rand() % 255 + 1;
+    int y = rand() % 255 + 1;
+    int z = rand() % 255 + 1;
+    int a = rand() % 640 + 1;
+    SDL_Rect negyzet = {SCREEN_WIDTH/2-a/2, SCREEN_HEIGHT/2-a/2, a, a};
+    SDL_SetRenderDrawColor(gRenderer, x /*R*/, y /*G*/, z /*B*/, 0xFF /*A*/);
+    SDL_RenderDrawRect(gRenderer, &negyzet);
+    SDL_RenderFillRect(gRenderer, &negyzet);
+
 }
 
 bool init()
@@ -116,6 +114,7 @@ int main( int argc, char* args[] )
         //Clear screen
         SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(gRenderer);
+
 
         draw();
 
