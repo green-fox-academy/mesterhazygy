@@ -1,4 +1,4 @@
-    #include <iostream>
+#include <iostream>
 #include <iostream>
 #include <SDL.h>
 
@@ -22,12 +22,26 @@ SDL_Window* gWindow = nullptr;
 //The window renderer
 SDL_Renderer* gRenderer = nullptr;
 
-void draw(int x, int y)
+void draw()
 {
-    // draw a red horizontal line to the canvas' middle.
-        SDL_SetRenderDrawColor(gRenderer, 255 /*R*/, 0 /*G*/, 0 /*B*/, 0xFF /*A*/);
-    SDL_RenderDrawLine(gRenderer, x, y, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-    // draw a green vertical line to the canvas' middle.
+    SDL_SetRenderDrawColor(gRenderer, 255 /*R*/, 255 /*G*/, 0 /*B*/, 0xFF /*A*/);
+
+    /*SDL_Rect negyzet = {x, y, 40, 40};
+    SDL_RenderFillRect(gRenderer, &negyzet);
+    SDL_RenderDrawRect(gRenderer, &negyzet);
+    */
+    SDL_SetRenderDrawColor(gRenderer, 200 /*R*/, 0 /*G*/, 200 /*B*/, 0xFF /*A*/);
+
+    for (int i = 0; i < SCREEN_WIDTH + 1; i += 20){
+        for (int j = 0; j < SCREEN_HEIGHT + 1; j += 20){
+            if ((i == 0) || (j == 0)){
+                SDL_RenderDrawLine(gRenderer, i, j, SCREEN_WIDTH/2, SCREEN_HEIGHT / 2);
+            } else if ((i == SCREEN_WIDTH) || (j == SCREEN_HEIGHT)) {
+                SDL_RenderDrawLine(gRenderer, i, j, SCREEN_WIDTH/2, SCREEN_HEIGHT / 2);
+            }
+        }
+    }
+
 }
 
 bool init()
@@ -76,7 +90,6 @@ int main( int argc, char* args[] )
 {
     //Start up SDL and create window
 
-    int x, y;
 
     if( !init() )
     {
@@ -105,13 +118,7 @@ int main( int argc, char* args[] )
         SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(gRenderer);
 
-        for (int i = 0; i < SCREEN_WIDTH; i += 50) {
-            for (int j = 0; j < SCREEN_HEIGHT; j += 50) {
-                draw(i, j);
-            }
-        }
-
-        draw(20, 40);
+        draw();
 
         //Update screen
         SDL_RenderPresent(gRenderer);
