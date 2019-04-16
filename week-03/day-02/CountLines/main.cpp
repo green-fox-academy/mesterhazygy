@@ -18,10 +18,14 @@ int rowsNum(std::string fileName)
     std::string text;
     myText.open(fileName);
     int rows = 0;
-    while (!myText.eof()) {
-        getline(myText, text);
-        rows ++;
+    if (myText.is_open()) {
+        while (!myText.eof()) {
+            getline(myText, text);
+            rows ++;
+        }
+        myText.close();
+        return rows;
+    } else {
+        return 0;
     }
-    myText.close();
-    return rows;
 }
