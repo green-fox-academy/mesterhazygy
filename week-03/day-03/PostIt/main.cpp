@@ -1,36 +1,5 @@
 #include <iostream>
-
-class PostIt {
-public:
-    const std::string &getBackGroundColor() const
-    {
-        return _backGroundColor;
-    }
-
-    const std::string &getText() const
-    {
-        return _text;
-    }
-
-    const std::string &getTextColor() const
-    {
-        return _textColor;
-    }
-
-    PostIt(const std::string &backGroundColor, const std::string &text, const std::string &textColor)
-            : _backGroundColor(
-            backGroundColor), _text(text), _textColor(textColor)
-    {
-        _backGroundColor = backGroundColor;
-        _text = text;
-        _textColor = textColor;
-    }
-
-private:
-    std::string _backGroundColor;
-    std::string _text;
-    std::string _textColor;
-};
+#include "PostIt.h"
 
 int main()
 {
