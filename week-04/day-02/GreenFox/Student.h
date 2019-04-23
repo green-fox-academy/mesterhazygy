@@ -11,10 +11,13 @@
 class Student : public Person {
 public:
     Student(std::string name, int age, Gender gender, std::string prevOrganization);
+
     Student();
 
     void introduce() override;
+
     void getGoal() override;
+
     void skipDays(int numOfDays);
 
 private:

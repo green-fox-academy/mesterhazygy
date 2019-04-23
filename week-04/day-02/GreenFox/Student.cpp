@@ -9,6 +9,7 @@ Student::Student(std::string name, int age, Gender gender, std::string prevOrgan
     _prevOrganization = prevOrganization;
     _skippedDays = 0;
 }
+
 Student::Student() : Person()
 {
     _prevOrganization = "The School of Life";
@@ -17,7 +18,8 @@ Student::Student() : Person()
 
 void Student::introduce()
 {
-    std::cout << "Hi, my name is " << getName() << ", I'm " << getAge() << " years old " << getGenderString() << " from " << _prevOrganization
+    std::cout << "Hi, my name is " << getName() << ", I'm " << getAge() << " years old " << getGenderString()
+              << " from " << _prevOrganization
               << " and I skipped " << _skippedDays << " days." << std::endl;
 }
 

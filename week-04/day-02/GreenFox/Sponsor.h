@@ -5,9 +5,24 @@
 #ifndef GREENFOX_SPONSOR_H
 #define GREENFOX_SPONSOR_H
 
+#include "Person.h"
 
-class Sponsor {
 
+class Sponsor : public Person {
+public:
+    Sponsor(std::string name, int age, Gender gender, std::string company);
+
+    Sponsor();
+
+    void introduce() override;
+
+    void getGoal() override;
+
+    void hire();
+
+private:
+    int _hiredStudents;
+    std::string _company;
 };
 
 
