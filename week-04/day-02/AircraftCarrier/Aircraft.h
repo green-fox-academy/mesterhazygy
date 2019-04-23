@@ -5,6 +5,8 @@
 #ifndef AIRCRAFTCARRIER_AIRCRAFT_H
 #define AIRCRAFTCARRIER_AIRCRAFT_H
 
+#include <iostream>
+
 enum Type {
     F16,
     F35
@@ -12,15 +14,27 @@ enum Type {
 
 class Aircraft {
 public:
-    Aircraft(Type type, int ammo, int damage);
+    Aircraft(Type type);
+
+    int getAmmo() const;
+
+    int getDamage() const;
+
     int damageOutput = 0;
+
     virtual void fight();
-    virtual void refill(int ammoRe);
+
+    virtual int refill(int ammoRe);
+
+    std::string getTypeString();
+
+    void getStatus();
 
 private:
     Type _type;
     int _ammo;
     int _damage;
+    int _maxAmmo;
 };
 
 

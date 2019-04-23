@@ -5,20 +5,51 @@
 #include "Aircraft.h"
 
 
-Aircraft::Aircraft(Type type, int ammo, int damage)
+Aircraft::Aircraft(Type type)
 {
     _type = type;
-    _ammo = ammo;
-    _damage = damage;
 }
 
 void Aircraft::fight()
 {
-    int damageOutput = _damage * _ammo;
+    damageOutput = _damage * _ammo;
     _ammo = 0;
 }
 
-void Aircraft::refill(int ammoRe)
+int Aircraft::refill(int ammoRe)
 {
-    _ammo += ammoRe;
+    if (ammoRe >= _maxAmmo) {
+        _ammo = _maxAmmo;
+        ammoRe -= _maxAmmo;
+    } else {
+        _ammo += ammoRe;
+        ammoRe = 0;
+    }
+    return ammoRe;
+}
+
+std::string Aircraft::getTypeString()
+{
+    switch (_type) {
+        case F16:
+            return "F16";
+        case F35:
+            return "F35";
+    }
+}
+
+void Aircraft::getStatus()
+{
+    std::cout << "Type: " << getTypeString() << ", ammo: " << _ammo << ", damage: " << _damage << ", all damage: "
+              << damageOutput << std::endl;
+}
+
+int Aircraft::getAmmo() const
+{
+    return _ammo;
+}
+
+int Aircraft::getDamage() const
+{
+    return _damage;
 }

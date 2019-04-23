@@ -4,9 +4,9 @@
 
 #include "F35.h"
 
-F35::F35(Type type, int ammo, int damage) : Aircraft(type, ammo, damage)
+F35::F35(Type type) : Aircraft(type)
 {
-    _type = Type::F35;
     _ammo = 0;
     _damage = 50;
+    _maxAmmo = 12;
 }

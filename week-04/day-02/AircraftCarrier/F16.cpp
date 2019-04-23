@@ -4,9 +4,9 @@
 
 #include "F16.h"
 
-F16::F16(Type type, int ammo, int damage) : Aircraft(type, ammo, damage)
+F16::F16(Type type) : Aircraft(type)
 {
-    _type = Type::F16;
     _ammo = 0;
     _damage = 30;
+    _maxAmmo = 8;
 }

@@ -9,11 +9,13 @@
 
 
 class F35 : public Aircraft {
-    F35(Type type, int ammo, int damage);
+    F35(Type type);
+
 private:
     Type _type;
     int _ammo;
     int _damage;
+    int _maxAmmo;
 };
 
 

@@ -8,12 +8,14 @@
 #include "Aircraft.h"
 
 
-class F16 : public Aircraft{
-    F16(Type type, int ammo, int damage);
+class F16 : public Aircraft {
+    F16(Type type);
+
 private:
     Type _type;
     int _ammo;
     int _damage;
+    int _maxAmmo;
 };
 
 
