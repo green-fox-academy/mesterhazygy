@@ -2,6 +2,8 @@
 #include "Flyable.h"
 #include "Vehicle.h"
 #include "Helicopter.h"
+#include "Animal.h"
+#include "Bird.h"
 
 int main()
 {
@@ -9,5 +11,7 @@ int main()
     heli.land();
     Helicopter apache(2, 453, "fekete");
     apache.fly();
+    Bird sas("piros");
+    sas.takeOff();
     return 0;
 }
