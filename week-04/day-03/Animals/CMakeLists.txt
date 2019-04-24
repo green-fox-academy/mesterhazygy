@@ -3,4 +3,4 @@ project(Animals)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Animals main.cpp Animal.cpp Animal.h Reptile.cpp Reptile.h Mammal.cpp Mammal.h Bird.cpp Bird.h)
+add_executable(Animals main.cpp Animal.h Reptile.cpp Reptile.h Mammal.cpp Mammal.h Bird.cpp Bird.h)
