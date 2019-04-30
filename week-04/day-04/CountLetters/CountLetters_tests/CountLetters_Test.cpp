@@ -7,6 +7,6 @@ TEST(testcounter, test_counter){
 
     std::map<char, int> myMap = letterCounter(userWord);
 
-    ASSERT_EQ(myMap['u'], 2);
+    ASSERT_EQ(myMap['t'], 1);
 }
 

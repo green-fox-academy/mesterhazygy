@@ -3,3 +3,13 @@
 //
 
 #include "Station.h"
+
+Station::Station(int stationGas)
+{
+    _stationGas = 500;
+}
+
+void Station::fill(Car)
+{
+
+}

@@ -4,10 +4,17 @@
 
 #ifndef PETROLSTATION_STATION_H
 #define PETROLSTATION_STATION_H
+#include "Car.h"
+#include <iostream>
 
 
 class Station {
+public:
+    Station(int stationGas);
 
+    void fill(Car);
+protected:
+    int _stationGas;
 };
 
 
