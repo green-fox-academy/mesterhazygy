@@ -12,7 +12,7 @@ class Printer2D : public Printer {
 public:
     Printer2D(int sizeX, int sizeY);
     std::string getSize() override;
-    virtual void print() override;
+    void print();
 private:
     int _sizeX;
     int _sizeY;

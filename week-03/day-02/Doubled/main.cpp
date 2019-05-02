@@ -26,7 +26,7 @@ std::string decryptText(std::string fileName)
             std::istringstream ss(line);
             std::string word;
             while(std::getline(ss, word,' ')) {
-                for (int i = 0; i < word.length(); i+=2){
+                for (int i = 0; i < word.length(); i++){
                     word.erase(i, 1);
                 }
                 newText += word + " ";

@@ -22,6 +22,5 @@ int main()
         myPrinters[i]->print();
     }
 
-
     return 0;
 }

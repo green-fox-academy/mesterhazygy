@@ -6,6 +6,7 @@
 
 std::map<char, int> letterCounter(std::string userWord)
 {
+    int count = 0;
     std::map<char, int> counter;
     for (int j = 0; j < userWord.length(); j++){
         if (counter.find(userWord[j])->first) {
