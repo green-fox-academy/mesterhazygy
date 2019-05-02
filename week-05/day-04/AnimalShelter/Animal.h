@@ -16,11 +16,13 @@ public:
 
     int getHealCost() const;
 
-    void heal();
+    virtual void heal() = 0;
 
     bool isAdoptable();
 
     std::string toString();
+
+    const std::string &getName() const;
 
 protected:
     std::string _name;

@@ -15,15 +15,6 @@ void Animal::setIsHealthy(bool isHealthy)
     _isHealthy = isHealthy;
 }
 
-void Animal::heal()
-{
-    bool temp = isIsHealthy();
-    temp = true;
-    setIsHealthy(temp);
-}
-
-
-
 bool Animal::isAdoptable()
 {
     if (!_isHealthy)
@@ -45,4 +36,9 @@ std::string Animal::toString()
 int Animal::getHealCost() const
 {
     return _healCost;
+}
+
+const std::string &Animal::getName() const
+{
+    return _name;
 }

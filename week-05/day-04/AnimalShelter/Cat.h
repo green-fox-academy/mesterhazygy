@@ -13,6 +13,8 @@ public:
 
     Cat();
 
+    virtual void heal() override;
+
 };
 
 

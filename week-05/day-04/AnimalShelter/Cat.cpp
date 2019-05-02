@@ -14,3 +14,9 @@ Cat::Cat()
 {
     _name = "cat";
 }
+ void Cat::heal()
+ {
+     bool temp = isIsHealthy();
+     temp = true;
+     setIsHealthy(temp);
+ }
