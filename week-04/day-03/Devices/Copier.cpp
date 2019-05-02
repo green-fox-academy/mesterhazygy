@@ -8,3 +8,11 @@ Copier::Copier(int sizeX, int sizeY, int speed) : Printer2D(sizeX, sizeY), Scann
 {
 
 }
+
+void Copier::copy()
+{
+    scan();
+    std::cout << " and ";
+    print();
+    std::cout << std::endl;
+}

@@ -13,5 +13,10 @@ Printer3D::Printer3D(int sizeX, int sizeY, int sizeZ)
 
 std::string Printer3D::getSize()
 {
+    return std::to_string(_sizeX) + " X " + std::to_string(_sizeY) + " X " + std::to_string(_sizeZ);
+}
 
+void Printer3D::print()
+{
+    std::cout << "I'm printing something that's " << getSize() << " cm-s" << std::endl;
 }
