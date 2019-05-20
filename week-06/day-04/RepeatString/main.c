@@ -15,6 +15,7 @@ int main()
     scanf("%d", &userNum);
     char *result = repeater(string, userNum);
     printf("%s\n", result);
+
     free(string);
     free(result);
     string = NULL;
@@ -39,7 +40,7 @@ char *read_string()
 
 char *repeater(char *string, int userNum)
 {
-    char *result=(char *)malloc(strlen(string) * userNum + 1);
+    char *result = (char *) malloc(strlen(string) * userNum + 1);
     strcpy(result, string);
     for (int i = 0; i < userNum - 1; ++i) {
         strcat(result, string);
