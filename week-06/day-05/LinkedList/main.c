@@ -119,14 +119,14 @@ int isEmpty(linked_list_t *head)
 linked_list_t *delete(linked_list_t *head) // delete actual head!
 {
     head->next->data = 0;
-    linked_list_t *temp = head->next;
+    linked_list_t *temp= head->next;
     free(head);
     return temp;
 }
 
 linked_list_t *deleteFirst(linked_list_t *head)
 {
-    linked_list_t *temp = head->next;
+    linked_list_t *temp= head->next;
     head->next = head->next->next;
     free(temp);
     return head;
@@ -136,7 +136,7 @@ int deleteElements(linked_list_t *node, int value)
 {
     int counter = 0;
     while (node->next != NULL) {
-        if (node->next->data == value) {
+        if(node->next->data == value){
             linked_list_t *temp = node->next;
             node->next = node->next->next;
             free(temp);
@@ -158,8 +158,8 @@ void printElements(linked_list_t *node)
 
 linked_list_t *searchValue(linked_list_t *node, int value)
 {
-    while (node->next != NULL) {
-        if (node->data == value)
+    while(node->next != NULL){
+        if(node->data == value)
             return node;
         else
             node = node->next;
@@ -171,11 +171,11 @@ linked_list_t *bubbleSort(linked_list_t *node)
 {
     int swapped = 1;
     linked_list_t *head = node;
-    linked_list_t *temp = (linked_list_t *) malloc(sizeof(linked_list_t));
-    while (swapped) {
+    linked_list_t *temp = (linked_list_t *)malloc(sizeof(linked_list_t));
+    while(swapped){
         swapped = 0;
-        while (node->next != NULL) {
-            if (node->data > node->next->data) {
+        while(node->next != NULL){
+            if(node->data > node->next->data){
                 swapped = 1;
                 temp->data = node->data;
                 node->data = node->next->data;
@@ -189,20 +189,22 @@ linked_list_t *bubbleSort(linked_list_t *node)
     return head;
 }
 
-linked_list_t *insertionSort(linked_list_t *head)
+linked_list_t *insertionSort(linked_list_t *node)
 {
-    linked_list_t *sorted = head;
-    linked_list_t *prev = head;
+    int swapped = 1;
+    linked_list_t *head = node;
+    linked_list_t *new = node;
     linked_list_t *temp;
-    linked_list_t *temp2;
-    while (prev->next != NULL) {
-        temp = sorted;
-        while (prev->next != NULL && temp != prev->next && temp->data < prev->next->data)
-            temp = temp->next;
-        if (prev->next != temp) {
-            temp2 = prev->next;
-            prev->next = prev->next->next;
-            sorted = prepend1(sorted,temp2->data);
+    while(swapped){
+        swapped = 0;
+        while(new->next != NULL){
+            if(node->next->data > node->next->next->data){
+                swapped = 1;
+                temp = node->next;
+                node->next = node->next->next;
+                node->next->next = temp;
+            }
+            node = node->next;
         }
     }
 
