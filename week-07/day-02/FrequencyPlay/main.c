@@ -19,7 +19,7 @@ int main(void) {
 
 	while (1) {
 		int a = 0;
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 12; i++) {
 			while (a < 3) {
 				BSP_LED_On(LED1);
 				HAL_Delay(1000);
@@ -53,6 +53,27 @@ int main(void) {
 					HAL_Delay(125);
 					a++;
 				}
+			}
+			if (a == 12) {
+				while (a < 15) {
+					BSP_LED_On(LED1);
+					HAL_Delay(250);
+					BSP_LED_Off(LED1);
+					HAL_Delay(250);
+					a++;
+				}
+			}
+			if (a == 15) {
+				while (a < 18) {
+					BSP_LED_On(LED1);
+					HAL_Delay(500);
+					BSP_LED_Off(LED1);
+					HAL_Delay(500);
+					a++;
+				}
+			}
+			if (a == 18){
+				a = 0;
 			}
 		}
 	}
