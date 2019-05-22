@@ -47,9 +47,6 @@ int main(void) {
 	init_pins();
 
 	uint32_t first_led = (1 << 10);
-	uint32_t second_led = (1 << 9);
-	uint32_t third_led = (1 << 8);
-	uint32_t fourth_led = (1 << 7);
 	uint32_t user_button = (1 << 11);
 	uint32_t plus_button = (1 << 4);
 	//  uint32_t user_led = (1 << 10) | (1 << 9) | (1 << 8) | (1 << 7);
@@ -58,39 +55,24 @@ int main(void) {
 		/* when button is pushed LED turns on, when released, then LED turns off */
 		if (GPIOI->IDR & (user_button)) {
 			/* set PI1 */
-			GPIOF->BSRR = first_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = first_led << 16;
-			GPIOF->BSRR = second_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = second_led << 16;
-			GPIOF->BSRR = third_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = third_led << 16;
-			GPIOF->BSRR = fourth_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = fourth_led << 16;
+			for (int i = 0; i < 4; i++) {
+				GPIOF->BSRR = first_led >> i;
+				HAL_Delay(50);
+				GPIOF->BSRR = first_led >> i << 16;
+			}
 		}
 		if (GPIOB->IDR & (plus_button)) {
-			GPIOF->BSRR = fourth_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = fourth_led << 16;
-			GPIOF->BSRR = third_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = third_led << 16;
-			GPIOF->BSRR = second_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = second_led << 16;
-			GPIOF->BSRR = first_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = first_led << 16;
+			for (int i = 0; i < 4; i++) {
+				GPIOF->BSRR = first_led >> (3 - i);
+				HAL_Delay(50);
+				GPIOF->BSRR = first_led >> (3 - i) << 16;
+			}
+
+
 		} else {
 			/* reset PI1 */
 
 			GPIOF->BSRR = first_led << 16;
-			GPIOF->BSRR = second_led << 16;
-			GPIOF->BSRR = third_led << 16;
-			GPIOF->BSRR = fourth_led << 16;
 			//  GPIOF->BSRR = user_led << 16;
 			/* we could use the ODR register also
 			 reset PI1, leave the other bits as they are
