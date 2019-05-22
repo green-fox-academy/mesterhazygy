@@ -47,7 +47,6 @@ int main(void) {
 	uint32_t first_led = (1 << 10);
 	uint32_t user_button = (1 << 11);
 	//  uint32_t user_led = (1 << 10) | (1 << 9) | (1 << 8) | (1 << 7);
-
 	while (1) {
 		/* when button is pushed LED turns on, when released, then LED turns off */
 		if (GPIOI->IDR & (user_button)) {
@@ -55,28 +54,21 @@ int main(void) {
 			for (int i = 0; i < 4; i++) {
 				if (i != 3) {
 					GPIOF->BSRR = first_led >> i;
-					HAL_Delay(50);
+					HAL_Delay(150);
 					GPIOF->BSRR = first_led >> i << 16;
 				} else {
 					GPIOA->BSRR |= 1;
-					HAL_Delay(50);
+					HAL_Delay(150);
 					GPIOA->BSRR |= 1 << 16;
 				}
 			}
-			for (int i = 0; i < 4; i++) {
-				if (i != 3) {
-					GPIOF->BSRR = first_led >> (3 - i);
-					HAL_Delay(50);
-					GPIOF->BSRR = first_led >> (3 - i) << 16;
-				} else {
-					GPIOA->BSRR |= 1;
-					HAL_Delay(50);
-					GPIOA->BSRR |= 1 << 16;
-				}
+			for (int i = 0; i < 2; i++) {
+				GPIOF->BSRR = first_led >> (2 - i);
+				HAL_Delay(150);
+				GPIOF->BSRR = first_led >> (2 - i) << 16;
 			}
 		} else {
 			/* reset PI1 */
-
 			GPIOA->BSRR |= 1 << 16;
 			GPIOF->BSRR = first_led << 16;
 			//  GPIOF->BSRR = user_led << 16;
