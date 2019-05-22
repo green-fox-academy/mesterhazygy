@@ -73,9 +73,6 @@ int main(void) {
 			GPIOF->BSRR = second_led;
 			HAL_Delay(50);
 			GPIOF->BSRR = second_led << 16;
-			GPIOF->BSRR = first_led;
-			HAL_Delay(50);
-			GPIOF->BSRR = first_led << 16;
 
 			//  GPIOF->BSRR = user_led;
 			//  GPIOF->BSRR = user_led << 16;
