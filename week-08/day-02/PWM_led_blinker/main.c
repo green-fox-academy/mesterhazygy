@@ -25,17 +25,6 @@ void init_LED() {
 	HAL_GPIO_Init(GPIOB, &PB4_LED_config);
 }
 
-void init_leds() {
-	__HAL_RCC_GPIOF_CLK_ENABLE()
-	;
-	GPIO_InitTypeDef gpio_config;
-	gpio_config.Pin = (GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10);
-	gpio_config.Mode = GPIO_MODE_OUTPUT_PP;
-	gpio_config.Pull = GPIO_NOPULL;
-	gpio_config.Speed = GPIO_SPEED_FAST;
-	HAL_GPIO_Init(GPIOF, &gpio_config);
-}
-
 void init_timer() {
 	__HAL_RCC_TIM3_CLK_ENABLE()
 	;
@@ -71,17 +60,14 @@ int main(void) {
 	//BSP_LED_Init(LED_GREEN);
 	init_timer();
 	init_LED();
-	init_leds();
 	init_PWM();
 
 	/* starting the timer */
 	HAL_TIM_PWM_Start(&timer_handle, TIM_CHANNEL_1);
 
-	uint16_t timer_value = 0;
 	while (1) {
 
 		/* blinking the user LED with 0.1 Hz (1 on and 1 off per 100 ms) */
-		timer_value = __HAL_TIM_GET_COUNTER(&timer_handle);
 		for (int i = 0; i < 100; i++) {
 			__HAL_TIM_SET_COMPARE(&timer_handle, TIM_CHANNEL_1, i);
 			HAL_Delay(10);
