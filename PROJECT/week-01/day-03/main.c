@@ -6,6 +6,8 @@
 #define UART_PUTCHAR int __io_putchar(int ch)
 
 static void SystemClock_Config(void);
+static void Error_Handler(void);
+int calculate_rpm(int);
 
 TIM_HandleTypeDef timer_handle;
 TIM_HandleTypeDef timer_handle_2;
@@ -18,9 +20,14 @@ ADC_HandleTypeDef adc_handle;
 ADC_ChannelConfTypeDef adc_channel_config;
 UART_HandleTypeDef uart_handle;
 
+volatile uint8_t pwm_val = 0;
+volatile uint8_t blade_counter = 0;
+volatile uint16_t fan_rpm;
+volatile uint32_t fan_round_counter = 0;
 volatile uint8_t buffer = 0;
 volatile uint8_t *text;
 volatile int flag = 0;
+volatile uint16_t period_counter = 0;
 
 
 int _write(int file, char *ptr, int len)
@@ -49,20 +56,20 @@ void init_input_capture_pin()
 void init_uart()
 {
     /* enable the clock of the used peripherial instance */
-        __HAL_RCC_USART1_CLK_ENABLE();
+    __HAL_RCC_USART1_CLK_ENABLE();
 
         /* defining the UART configuration structure */
-        uart_handle.Instance = USART1;
-        uart_handle.Init.BaudRate = 115200;
-        uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
-        uart_handle.Init.StopBits = UART_STOPBITS_1;
-        uart_handle.Init.Parity = UART_PARITY_NONE;
-        uart_handle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-        uart_handle.Init.Mode = UART_MODE_TX_RX;
+    uart_handle.Instance = USART1;
+    uart_handle.Init.BaudRate = 115200;
+    uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
+    uart_handle.Init.StopBits = UART_STOPBITS_1;
+    uart_handle.Init.Parity = UART_PARITY_NONE;
+    uart_handle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    uart_handle.Init.Mode = UART_MODE_TX_RX;
 
-        BSP_COM_Init(COM1, &uart_handle);
-		HAL_NVIC_EnableIRQ(USART1_IRQn);
-		HAL_NVIC_SetPriority(USART1_IRQn, 8, 0);
+    BSP_COM_Init(COM1, &uart_handle);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
+	HAL_NVIC_SetPriority(USART1_IRQn, 8, 0);
 }
 
 void init_adc()
@@ -109,18 +116,6 @@ void init_FAN() {
 	PB4_PIN_config.Alternate = GPIO_AF2_TIM3; /* we need this alternate function to use TIM2 in OC mode */
 
 	HAL_GPIO_Init(GPIOB, &PB4_PIN_config);
-}
-
-void init_IR_input() {
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-
-	PA15_PIN_config.Pin = GPIO_PIN_15;
-	PA15_PIN_config.Mode = GPIO_MODE_INPUT; /* configure as output, in PUSH-PULL mode */
-	PA15_PIN_config.Pull = GPIO_NOPULL;
-	PA15_PIN_config.Speed = GPIO_SPEED_HIGH;
-	PA15_PIN_config.Alternate = GPIO_AF1_TIM2; /* we need this alternate function to use TIM2 in OC mode */
-
-	HAL_GPIO_Init(GPIOA, &PA15_PIN_config);
 }
 
 void init_timer() {
@@ -172,6 +167,7 @@ void init_PWM() {
 int main(void) {
 	HAL_Init();
 	SystemClock_Config();
+
 	init_timer();
 	init_timer_2();
 	init_input_capture_pin();
@@ -179,39 +175,38 @@ int main(void) {
 	init_PWM();
 	init_uart();
     init_adc();
+
 	HAL_TIM_PWM_Start(&timer_handle, TIM_CHANNEL_1);
 	HAL_TIM_IC_Start_IT(&timer_handle_2, TIM_CHANNEL_1);
 	HAL_TIM_Base_Start_IT(&timer_handle_2);
+	HAL_UART_Receive_IT(&uart_handle, &buffer, 1);
 
-    int adc_value = 0;
+    int adc_value;
 	while (1) {
-        HAL_Delay(100);
+        HAL_Delay(10);
         HAL_ADC_Start(&adc_handle);
         if(HAL_ADC_PollForConversion(&adc_handle, 10) == HAL_OK){
             adc_value = HAL_ADC_GetValue(&adc_handle);
-			int fan_speed = adc_value / 40.2;
+			int fan_speed = ((float)adc_value / 4060) * 100;
 			__HAL_TIM_SET_COMPARE(&timer_handle, TIM_CHANNEL_1, fan_speed);
+
+	        printf("PWM: %d | RPM: %d\n", fan_speed, fan_rpm);
+	        __HAL_TIM_SET_COMPARE(&timer_handle, TIM_CHANNEL_1, fan_speed);
+	        HAL_Delay(500);
         }
-	}
+    }
+}
+
+int calculate_rpm(int time)
+{
+    float round_time = time / 108000000.0;
+    int rpm = 60 / round_time;
+    return rpm;
 }
 
 void USART1_IRQHandler()
 {
 	HAL_UART_IRQHandler(&uart_handle);
-}
-
-void TIM2_IRQHandler(void)
-{
-  HAL_TIM_IRQHandler(&timer_handle_2);
-}
-
-void HAL_TIM_IC_CaptureCallback (TIM_HandleTypeDef * htim)
-{
-	int infra_data;
-	if(htim->Instance == TIM2) {
-		infra_data = HAL_TIM_ReadCapturedValue(&timer_handle_2, TIM_CHANNEL_1);
-		printf("Infra data: %d\n", infra_data);
-	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -220,9 +215,33 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	text = realloc(text, length + 2);
 	text[length] = buffer;
 	text[length + 1] = '\0';
-
 	HAL_UART_Receive_IT(&uart_handle, &buffer, 1);
 	flag = 1;
+}
+
+void TIM2_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&timer_handle_2);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef * htim)
+{
+	if(htim->Instance == TIM2){
+		period_counter++;
+	}
+}
+
+void HAL_TIM_IC_CaptureCallback (TIM_HandleTypeDef * htim)
+{
+    blade_counter++;
+    if (blade_counter == 8){
+	    if(htim->Instance == TIM2) {
+		    fan_rpm = calculate_rpm(HAL_TIM_ReadCapturedValue(&timer_handle_2, TIM_CHANNEL_1) + (period_counter * (65535 - 1)));
+            fan_round_counter++;
+	    }
+        blade_counter = 0;
+        period_counter = 0;
+    }
 }
 
 void Error_Handler(void) {
