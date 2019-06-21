@@ -13,22 +13,20 @@ TIM_HandleTypeDef timer_handle;
 TIM_HandleTypeDef timer_handle_2;
 TIM_OC_InitTypeDef pwm_config;
 GPIO_InitTypeDef PB4_PIN_config;
-GPIO_InitTypeDef PA15_PIN_config;
 GPIO_InitTypeDef gpio_adc_pin;
 GPIO_InitTypeDef gpio_ic_pin;
 ADC_HandleTypeDef adc_handle;
 ADC_ChannelConfTypeDef adc_channel_config;
 UART_HandleTypeDef uart_handle;
 
-volatile uint8_t pwm_val = 0;
+volatile uint8_t fan_speed = 0;
 volatile uint8_t blade_counter = 0;
 volatile uint16_t fan_rpm;
-volatile uint32_t fan_round_counter = 0;
 volatile uint8_t buffer = 0;
 volatile uint8_t *text;
 volatile int flag = 0;
 volatile uint16_t period_counter = 0;
-
+volatile uint16_t reference_rpm = 0;
 
 int _write(int file, char *ptr, int len)
 {
@@ -55,10 +53,8 @@ void init_input_capture_pin()
 
 void init_uart()
 {
-    /* enable the clock of the used peripherial instance */
     __HAL_RCC_USART1_CLK_ENABLE();
 
-        /* defining the UART configuration structure */
     uart_handle.Instance = USART1;
     uart_handle.Init.BaudRate = 115200;
     uart_handle.Init.WordLength = UART_WORDLENGTH_8B;
@@ -74,9 +70,8 @@ void init_uart()
 
 void init_adc()
 {
-    /* configuring A0 pin as analog input */
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    /* there is no need for setting the Alternate datafield like other peripherals*/
+
     gpio_adc_pin.Mode = GPIO_MODE_ANALOG;
     gpio_adc_pin.Pin = GPIO_PIN_0;
     gpio_adc_pin.Speed = GPIO_SPEED_FAST;
@@ -84,13 +79,11 @@ void init_adc()
 
     HAL_GPIO_Init(GPIOA, &gpio_adc_pin);
 
-    /* configuring ADC3, as it is the only ADC wired out to the headers */
     __HAL_RCC_ADC3_CLK_ENABLE();
     adc_handle.Instance = ADC3;
     adc_handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
     adc_handle.Init.Resolution = ADC_RESOLUTION_12B;
 
-    /* these 5 settings are closely related */
     adc_handle.Init.ScanConvMode = DISABLE;
     adc_handle.Init.ContinuousConvMode = DISABLE;
     adc_handle.Init.DiscontinuousConvMode = DISABLE;
@@ -99,7 +92,6 @@ void init_adc()
 
     HAL_ADC_Init(&adc_handle);
 
-    /* configuring a channel belonging to ADC3 */
     adc_channel_config.Channel = ADC_CHANNEL_0;
     adc_channel_config.SamplingTime = ADC_SAMPLETIME_56CYCLES;
 
@@ -110,10 +102,10 @@ void init_FAN() {
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
 	PB4_PIN_config.Pin = GPIO_PIN_4;
-	PB4_PIN_config.Mode = GPIO_MODE_AF_PP; /* configure as output, in PUSH-PULL mode */
+	PB4_PIN_config.Mode = GPIO_MODE_AF_PP;
 	PB4_PIN_config.Pull = GPIO_NOPULL;
 	PB4_PIN_config.Speed = GPIO_SPEED_HIGH;
-	PB4_PIN_config.Alternate = GPIO_AF2_TIM3; /* we need this alternate function to use TIM2 in OC mode */
+	PB4_PIN_config.Alternate = GPIO_AF2_TIM3;
 
 	HAL_GPIO_Init(GPIOB, &PB4_PIN_config);
 }
@@ -122,22 +114,22 @@ void init_timer() {
 	__HAL_RCC_TIM3_CLK_ENABLE();
 
 	timer_handle.Instance = TIM3;
-	timer_handle.Init.Prescaler = 108 - 1; // 108000000/10800=10000 -> speed of 1 count-up: 1/10000 sec = 0.1 ms
-	timer_handle.Init.Period = 100 - 1; // 10000 x 0.1 ms = 1 second period
+	timer_handle.Init.Prescaler = 108 - 1;
+	timer_handle.Init.Period = 100 - 1;
 	timer_handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	timer_handle.Init.CounterMode = TIM_COUNTERMODE_UP;
 
 	HAL_TIM_PWM_Init(&timer_handle);
 }
 
-void init_timer_2() {
+void init_timer_ic() {
 	__HAL_RCC_TIM2_CLK_ENABLE();
 	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 	TIM_IC_InitTypeDef sConfigIC = { 0 };
 
 	timer_handle_2.Instance = TIM2;
-	timer_handle_2.Init.Prescaler = 0; // 108000000/10800=10000 -> speed of 1 count-up: 1/10000 sec = 0.1 ms
-	timer_handle_2.Init.Period = 65535 - 1; // 10000 x 0.1 ms = 1 second period
+	timer_handle_2.Init.Prescaler = 0;
+	timer_handle_2.Init.Period = 65535 - 1;
 	timer_handle_2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	timer_handle_2.Init.CounterMode = TIM_COUNTERMODE_UP;
 
@@ -169,7 +161,7 @@ int main(void) {
 	SystemClock_Config();
 
 	init_timer();
-	init_timer_2();
+	init_timer_ic();
 	init_input_capture_pin();
 	init_FAN();
 	init_PWM();
@@ -180,20 +172,27 @@ int main(void) {
 	HAL_TIM_IC_Start_IT(&timer_handle_2, TIM_CHANNEL_1);
 	HAL_TIM_Base_Start_IT(&timer_handle_2);
 	HAL_UART_Receive_IT(&uart_handle, &buffer, 1);
-
+	uint32_t prev_time = HAL_GetTick();
     int adc_value;
+
 	while (1) {
-        HAL_Delay(10);
         HAL_ADC_Start(&adc_handle);
         if(HAL_ADC_PollForConversion(&adc_handle, 10) == HAL_OK){
             adc_value = HAL_ADC_GetValue(&adc_handle);
-			int fan_speed = ((float)adc_value / 4060) * 100;
+			fan_speed = ((float)adc_value / 4060) * 100;
+			if (flag == 1){
+	            reference_rpm = atoi(text);
+	            free(text);
+			    text = calloc(1, 1);
+	            flag = 0;
+	        }
+			if (HAL_GetTick() - prev_time > 1000){
+				printf("PWM: %d | RPM: %d\n", fan_speed, fan_rpm);
+				prev_time = HAL_GetTick();
+	        }
 			__HAL_TIM_SET_COMPARE(&timer_handle, TIM_CHANNEL_1, fan_speed);
-
-	        printf("PWM: %d | RPM: %d\n", fan_speed, fan_rpm);
-	        __HAL_TIM_SET_COMPARE(&timer_handle, TIM_CHANNEL_1, fan_speed);
-	        HAL_Delay(500);
-        }
+	        HAL_Delay(10);
+		}
     }
 }
 
@@ -237,10 +236,18 @@ void HAL_TIM_IC_CaptureCallback (TIM_HandleTypeDef * htim)
     if (blade_counter == 8){
 	    if(htim->Instance == TIM2) {
 		    fan_rpm = calculate_rpm(HAL_TIM_ReadCapturedValue(&timer_handle_2, TIM_CHANNEL_1) + (period_counter * (65535 - 1)));
-            fan_round_counter++;
 	    }
         blade_counter = 0;
         period_counter = 0;
+		if (reference_rpm - fan_rpm > 50 || fan_rpm - reference_rpm > 50){
+			if (fan_rpm < reference_rpm) {
+				if (fan_speed < 99)
+					fan_speed++;
+			} else if (fan_rpm > reference_rpm) {
+				if (fan_speed > 1)
+					fan_speed--;
+			}
+		}
     }
 }
 
